@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Systech Solutions • Authentication</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff6b35;
+            --dark: #0a0e27;
+            --darker: #050814;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #1a1f3a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-container {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-layer {
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920') center/cover;
+            opacity: 0.1;
+            animation: slowDrift 40s ease-in-out infinite alternate;
+        }
+
+        @keyframes slowDrift {
+            0% {
+                transform: scale(1) translateX(0);
+            }
+
+            100% {
+                transform: scale(1.1) translateX(-20px);
+            }
+        }
+
+        /* Liquid Morphing Blobs */
+        .liquid-blob {
+            position: absolute;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0.12;
+            filter: blur(70px);
+            animation: morphBlob 18s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            width: 600px;
+            height: 600px;
+            top: -300px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            bottom: -200px;
+            right: -150px;
+            animation-delay: 4s;
+        }
+
+        .blob-3 {
+            width: 400px;
+            height: 400px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 8s;
+        }
+
+        @keyframes morphBlob {
+
+            0%,
+            100% {
+                border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+
+            33% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: translate(60px, 40px) rotate(120deg) scale(1.1);
+            }
+
+            66% {
+                border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+                transform: translate(-40px, -60px) rotate(240deg) scale(0.9);
+            }
+        }
+
+        /* Particles */
+        canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        /* Glass Container with Liquid Border */
+        .container {
+            width: 420px;
+            padding: 40px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+            animation: containerFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes containerFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--primary));
+            background-size: 400% 400%;
+            border-radius: 25px;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(10px);
+            animation: liquidBorder 8s ease-in-out infinite;
+        }
+
+        @keyframes liquidBorder {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Header */
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), white, var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.8));
+            }
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.95rem;
+            opacity: 0.75;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        /* Toggle Buttons with Liquid Effect */
+        .toggle {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 35px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            position: relative;
+            padding: 4px;
+        }
+
+        .toggle-indicator {
+            position: absolute;
+            width: 50%;
+            height: calc(100% - 8px);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 30px;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            top: 4px;
+            left: 4px;
+            z-index: 0;
+        }
+
+        .toggle-indicator.signup {
+            transform: translateX(100%);
+        }
+
+        .toggle button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+
+        .toggle button.active {
+            color: var(--darker);
+        }
+
+        /* Forms */
+        form {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            animation: formSlideIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        form.active {
+            display: flex;
+        }
+
+        @keyframes formSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Input Fields with Liquid Effect */
+        input {
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.3),
+                inset 0 0 15px rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input:focus::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Submit Button with Liquid Ripple */
+        button.submit {
+            margin-top: 10px;
+            padding: 14px;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--darker);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        button.submit::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        button.submit:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        button.submit:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.6),
+                0 0 60px rgba(255, 107, 53, 0.4);
+        }
+
+        button.submit:active {
+            transform: scale(0.98);
+        }
+
+        button.submit span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            padding: 10px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+            transform: translateX(-5px);
+        }
+
+        /* Loading Animation */
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            margin: -20px 0 0 -20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 30px 25px;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+
+            .back-btn {
+                top: 15px;
+                left: 15px;
+                padding: 8px 20px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="particles"></canvas>
+
+    <!-- Background Elements -->
+    <div class="bg-container">
+        <div class="bg-layer"></div>
+        <div class="liquid-blob blob-1"></div>
+        <div class="liquid-blob blob-2"></div>
+        <div class="liquid-blob blob-3"></div>
+    </div>
+
+    <!-- Back to Landing -->
+    <button class="back-btn" onclick="window.location.href='landing.html'">← Back</button>
+
+    <div class="container">
+        <h2>SYSTECH SOLUTIONS</h2>
+        <div class="subtitle">Knowledge Acquisition Portal</div>
+
+        <div class="toggle">
+            <div class="toggle-indicator" id="toggleIndicator"></div>
+            <button id="signinBtn" class="active">SIGN IN</button>
+            <button id="signupBtn">SIGN UP</button>
+        </div>
+
+        <!-- Sign In -->
+        <form id="signinForm" class="active" onsubmit="login(event)">
+            <input id="signin-username" placeholder="Username" required>
+            <input id="signin-password" type="password" placeholder="Password" required>
+            <button class="submit" type="submit"><span>SIGN IN</span></button>
+        </form>
+
+        <!-- Sign Up -->
+        <form id="signupForm" onsubmit="signup(event)">
+            <input id="signup-first_name" placeholder="First Name" required>
+            <input id="signup-middle_name" placeholder="Middle Name">
+            <input id="signup-last_name" placeholder="Last Name" required>
+            <input id="signup-username" placeholder="Username" required>
+            <input id="signup-password" type="password" placeholder="Password" required>
+            <input id="signup-email" type="email" placeholder="Email" required>
+            <button class="submit" type="submit"><span>CREATE ACCOUNT</span></button>
+        </form>
+    </div>
+
+    <!-- Audio -->
+    <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+    <audio id="submitSound" src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-confirmation-914.mp3"></audio>
+
+    <script>
+        /* ------------------ Helpers ------------------ */
+        const $ = id => document.getElementById(id);
+
+        function safePlay(audio) {
+            try {
+                if (audio && audio.readyState >= 2) {
+                    audio.play().catch(() => { });
+                }
+            } catch (e) { }
+        }
+
+        /* ------------------ Sounds ------------------ */
+        const clickSound = $('clickSound');
+        const submitSound = $('submitSound');
+
+        /* ------------------ Toggle Logic ------------------ */
+        const signinBtn = $('signinBtn');
+        const signupBtn = $('signupBtn');
+        const signinForm = $('signinForm');
+        const signupForm = $('signupForm');
+        const toggleIndicator = $('toggleIndicator');
+
+        signinBtn.onclick = () => {
+            safePlay(clickSound);
+            signinBtn.classList.add('active');
+            signupBtn.classList.remove('active');
+            signinForm.classList.add('active');
+            signupForm.classList.remove('active');
+            toggleIndicator.classList.remove('signup');
+        };
+
+        signupBtn.onclick = () => {
+            safePlay(clickSound);
+            signupBtn.classList.add('active');
+            signinBtn.classList.remove('active');
+            signupForm.classList.add('active');
+            signinForm.classList.remove('active');
+            toggleIndicator.classList.add('signup');
+        };
+
+        /* ------------------ API ------------------ */
+        async function signup(e) {
+            e.preventDefault();
+            safePlay(submitSound);
+
+            const container = document.querySelector('.container');
+            container.classList.add('loading');
+
+            try {
+                const res = await fetch('https://api.stephenclouds.store/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        first_name: $('signup-first_name').value,
+                        middle_name: $('signup-middle_name').value,
+                        last_name: $('signup-last_name').value,
+                        username: $('signup-username').value,
+                        password: $('signup-password').value,
+                        email: $('signup-email').value
+                    })
+                });
+
+                const data = await res.json();
+                alert(data.msg);
+
+                if (res.ok) signinBtn.click();
+            } catch (err) {
+                alert('Connection error. Please try again.');
+            } finally {
+                container.classList.remove('loading');
+            }
+        }
+
+        async function login(e) {
+            e.preventDefault();
+            safePlay(submitSound);
+
+            const container = document.querySelector('.container');
+            container.classList.add('loading');
+
+            try {
+                const res = await fetch('https://api.stephenclouds.store/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: $('signin-username').value,
+                        password: $('signin-password').value
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert(data.msg);
+                    // Fade out transition
+                    document.body.style.transition = 'opacity 0.5s ease';
+                    document.body.style.opacity = '0';
+                    setTimeout(() => {
+                        window.location.href = 'backend.html';
+                    }, 500);
+                } else {
+                    alert(data.msg);
+                    container.classList.remove('loading');
+                }
+            } catch (err) {
+                alert('Connection error. Please try again.');
+                container.classList.remove('loading');
+            }
+        }
+
+        /* ------------------ Particles ------------------ */
+        const canvas = $('particles');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+        }
+        resize();
+        window.onresize = resize;
+
+        const particles = Array.from({ length: 80 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 2.5 + 0.5,
+            dx: (Math.random() - 0.5) * 0.5,
+            dy: (Math.random() - 0.5) * 0.5,
+            opacity: Math.random() * 0.5 + 0.3
+        }));
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0,212,255,${p.opacity})`;
+                ctx.fill();
+
+                p.x += p.dx;
+                p.y += p.dy;
+
+                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+            });
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Fade in on load
+        window.onload = () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        };
+    </script>
+
+</body>
+
+</html>

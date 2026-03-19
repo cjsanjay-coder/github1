@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student Directory • Systech</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #00d4ff;
+            --secondary: #ff6b35;
+            --dark: #0a0e27;
+            --darker: #050814;
+        }
+
+        body.light {
+            --bg: linear-gradient(135deg, #e0eafc, #cfdef3);
+            --card: rgba(255, 255, 255, 0.95);
+            --text: #2c3e50;
+            --primary: #0077ff;
+            --secondary: #ff5722;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 50%, #1a1f3a 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        /* Background */
+        .bg-container {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-layer {
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=1920') center/cover;
+            opacity: 0.06;
+            animation: slowPan 80s ease-in-out infinite alternate;
+        }
+
+        @keyframes slowPan {
+            from {
+                transform: scale(1.1) translateX(0);
+            }
+
+            to {
+                transform: scale(1.1) translateX(-30px);
+            }
+        }
+
+        /* Liquid Blobs */
+        .liquid-blob {
+            position: absolute;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0.08;
+            filter: blur(90px);
+            animation: morphBlob 25s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            width: 800px;
+            height: 800px;
+            top: -400px;
+            right: -400px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 700px;
+            height: 700px;
+            bottom: -350px;
+            left: -350px;
+            animation-delay: 8s;
+        }
+
+        @keyframes morphBlob {
+
+            0%,
+            100% {
+                border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+                transform: rotate(0deg) scale(1);
+            }
+
+            50% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: rotate(180deg) scale(1.2);
+            }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 100;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            padding: 10px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+            transform: translateX(-5px);
+        }
+
+        /* Card */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 35px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--primary));
+            background-size: 400% 400%;
+            border-radius: 25px;
+            z-index: -1;
+            opacity: 0.25;
+            filter: blur(15px);
+            animation: liquidBorder 12s ease-in-out infinite;
+        }
+
+        @keyframes liquidBorder {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Header */
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), white, var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.8));
+            }
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1rem;
+            opacity: 0.75;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        /* Department Filter Tabs */
+        .dept-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .dept-filter {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(10px);
+        }
+
+        .dept-filter:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 212, 255, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .dept-filter.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--darker);
+            border-color: transparent;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.5);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        /* Search */
+        .search {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 25px auto;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .search::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Table */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--darker);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child {
+            border-radius: 15px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 15px 0 0;
+        }
+
+        tbody tr {
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            animation: rowSlideIn 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateX(5px);
+            box-shadow: -5px 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        @keyframes rowSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        td {
+            padding: 14px 12px;
+            text-align: left;
+        }
+
+        /* Department Badge */
+        .dept-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+        }
+
+        .dept-badge.devops {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: rgba(0, 212, 255, 0.5);
+            color: #00d4ff;
+        }
+
+        .dept-badge.cloud {
+            background: rgba(100, 181, 246, 0.2);
+            border-color: rgba(100, 181, 246, 0.5);
+            color: #64b5f6;
+        }
+
+        .dept-badge.platform {
+            background: rgba(255, 167, 38, 0.2);
+            border-color: rgba(255, 167, 38, 0.5);
+            color: #ffa726;
+        }
+
+        .dept-badge.data-eng {
+            background: rgba(102, 187, 106, 0.2);
+            border-color: rgba(102, 187, 106, 0.5);
+            color: #66bb6a;
+        }
+
+        .dept-badge.data-vis {
+            background: rgba(171, 71, 188, 0.2);
+            border-color: rgba(171, 71, 188, 0.5);
+            color: #ab47bc;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.6;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .empty-state-text {
+            font-size: 1.2rem;
+        }
+
+        /* Light Theme */
+        body.light .container {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        body.light input {
+            color: var(--text);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.light input::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        body.light tbody tr {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        body.light tbody tr:nth-child(even) {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        body.light tbody tr:hover {
+            background: rgba(0, 119, 255, 0.1);
+        }
+
+        /* Responsive - Mobile Cards */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .container {
+                padding: 25px 15px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .theme-toggle,
+            .back-btn {
+                top: 15px;
+            }
+
+            .theme-toggle {
+                right: 15px;
+                font-size: 1.4rem;
+                padding: 10px;
+            }
+
+            .back-btn {
+                left: 15px;
+                padding: 8px 15px;
+                font-size: 0.85rem;
+            }
+
+            .dept-filters {
+                gap: 8px;
+            }
+
+            .dept-filter {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            /* Mobile Card View */
+            .table-wrap {
+                overflow-x: visible;
+            }
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 20px;
+                border-radius: 15px;
+                padding: 15px;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+            }
+
+            td {
+                padding: 8px 0;
+                position: relative;
+                padding-left: 45%;
+                text-align: right;
+            }
+
+            td::before {
+                position: absolute;
+                left: 10px;
+                font-weight: 700;
+                content: attr(data-label);
+                opacity: 0.7;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="bg-container">
+        <div class="bg-layer"></div>
+        <div class="liquid-blob blob-1"></div>
+        <div class="liquid-blob blob-2"></div>
+    </div>
+
+    <!-- Controls -->
+    <a href="backend.html" class="back-btn">← Add Student</a>
+    <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
+
+    <div class="container">
+        <h2>STUDENT DIRECTORY</h2>
+        <div class="subtitle">Registered Participants</div>
+
+        <!-- Department Filters -->
+        <div class="dept-filters">
+            <button class="dept-filter active" data-dept="all">All Departments</button>
+            <button class="dept-filter" data-dept="DevOps">🚀 DevOps</button>
+            <button class="dept-filter" data-dept="Cloud Engineer">☁️ Cloud Engineer</button>
+            <button class="dept-filter" data-dept="Platform Engineer">🛠️ Platform Engineer</button>
+            <button class="dept-filter" data-dept="Data Engineer">📊 Data Engineer</button>
+            <button class="dept-filter" data-dept="Data Visual">📈 Data Visual</button>
+        </div>
+
+        <!-- Search -->
+        <input class="search" id="search" placeholder="🔍 Search by name, company, trainer...">
+
+        <!-- Table -->
+        <div class="table-wrap">
+            <table id="students-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date of Joining</th>
+                        <th>Fees Paid</th>
+                        <th>Department</th>
+                        <th>Trainer</th>
+                        <th>Company</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+
+        <!-- Empty State (hidden by default) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">🌌</div>
+            <div class="empty-state-text">No students found</div>
+        </div>
+    </div>
+
+    <!-- Sound -->
+    <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+
+    <script>
+        const clickSound = document.getElementById('clickSound');
+        let allStudents = [];
+        let currentDept = 'all';
+
+        /* Theme */
+        function toggleTheme() {
+            document.body.classList.toggle('light');
+            clickSound.play().catch(() => { });
+        }
+
+        /* Get Department Badge Class */
+        function getDeptBadgeClass(dept) {
+            const map = {
+                'DevOps': 'devops',
+                'Cloud Engineer': 'cloud',
+                'Platform Engineer': 'platform',
+                'Data Engineer': 'data-eng',
+                'Data Visual': 'data-vis'
+            };
+            return map[dept] || 'devops';
+        }
+
+        /* Load students */
+        async function loadStudents() {
+            try {
+                const res = await fetch('https://api.stephenclouds.store/students');
+                if (!res.ok) throw new Error('Failed to fetch students');
+                allStudents = await res.json();
+
+                renderStudents();
+                setupFiltersAndSearch();
+            } catch (err) {
+                console.error(err);
+                alert('Unable to load students. Please check your backend connection.');
+                showEmptyState();
+            }
+        }
+
+        /* Render Students */
+        function renderStudents(filter = 'all', searchTerm = '') {
+            const tbody = document.getElementById('tbody');
+            const emptyState = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            let filtered = allStudents;
+
+            // Department filter
+            if (filter !== 'all') {
+                filtered = filtered.filter(s => s.department === filter);
+            }
+
+            // Search filter
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                filtered = filtered.filter(s =>
+                    s.name.toLowerCase().includes(term) ||
+                    s.company_name.toLowerCase().includes(term) ||
+                    s.trainer_name.toLowerCase().includes(term) ||
+                    s.department.toLowerCase().includes(term)
+                );
+            }
+
+            if (filtered.length === 0) {
+                showEmptyState();
+                return;
+            } else {
+                hideEmptyState();
+            }
+
+            filtered.forEach((student, index) => {
+                const tr = document.createElement('tr');
+                tr.style.animationDelay = `${index * 0.05}s`;
+
+                const deptClass = getDeptBadgeClass(student.department);
+
+                tr.innerHTML = `
+      <td data-label="Name">${student.name}</td>
+      <td data-label="Date of Joining">${new Date(student.date_of_joining).toLocaleDateString('en-IN')}</td>
+      <td data-label="Fees Paid">₹${parseFloat(student.fees_paid).toLocaleString('en-IN')}</td>
+      <td data-label="Department"><span class="dept-badge ${deptClass}">${student.department}</span></td>
+      <td data-label="Trainer">${student.trainer_name}</td>
+      <td data-label="Company">${student.company_name}</td>
+    `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* Setup Filters and Search */
+        function setupFiltersAndSearch() {
+            // Department filters
+            const filters = document.querySelectorAll('.dept-filter');
+            filters.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    clickSound.play().catch(() => { });
+
+                    filters.forEach(f => f.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    currentDept = btn.dataset.dept;
+                    const searchTerm = document.getElementById('search').value;
+                    renderStudents(currentDept, searchTerm);
+                });
+            });
+
+            // Search input
+            const search = document.getElementById('search');
+            search.addEventListener('input', (e) => {
+                renderStudents(currentDept, e.target.value);
+            });
+        }
+
+        /* Empty State */
+        function showEmptyState() {
+            document.getElementById('emptyState').style.display = 'block';
+            document.querySelector('.table-wrap').style.display = 'none';
+        }
+
+        function hideEmptyState() {
+            document.getElementById('emptyState').style.display = 'none';
+            document.querySelector('.table-wrap').style.display = 'block';
+        }
+
+        // Fade in on load
+        window.onload = () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+
+            loadStudents();
+        };
+    </script>
+
+</body>
+
+</html>
